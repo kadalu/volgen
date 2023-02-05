@@ -1,0 +1,12 @@
+{
+    "path": "/exports/vol1/s1",
+    "port": 5001,
+    "node": {
+        "name": "server1",
+        "id": "N1"
+    },
+    "volume": {
+        "id": "V1",
+        "name": "vol1"
+    }
+}

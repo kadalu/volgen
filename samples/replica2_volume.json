@@ -1,0 +1,45 @@
+{
+    "name": "vol1",
+    "distribute_groups": [
+        {
+            "type": "replica",
+            "storage_units": [
+                {
+                    "path": "/exports/vol1/s1",
+                    "port": 45001,
+                    "node": {
+                        "name": "server1",
+                        "id": "N1"
+                    }
+                },
+                {
+                    "path": "/exports/vol1/s2",
+                    "node": {
+                        "name": "server2",
+                        "id": "N2"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "replica",
+            "storage_units": [
+                {
+                    "path": "/exports/vol1/s3",
+                    "port": 45001,
+                    "node": {
+                        "name": "server3",
+                        "id": "N3"
+                    }
+                },
+                {
+                    "path": "/exports/vol1/s4",
+                    "node": {
+                        "name": "server4",
+                        "id": "N4"
+                    }
+                }
+            ]
+        }
+    ]
+}
