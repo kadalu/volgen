@@ -1,0 +1,18 @@
+name: volgen
+version: 0.1.0
+
+dependencies:
+  crinja:
+    github: straight-shoota/crinja
+
+targets:
+  kadalu-volgen:
+    main: src/main.cr
+
+authors:
+  - Kadalu Technologies Private Limited <hello@kadalu.tech>
+
+description: |
+  Kadalu Storage or Gluster Volfile generation
+
+license: GPL-3.0
