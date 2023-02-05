@@ -1,0 +1,66 @@
+volume {{ storage_unit.volume.name }}-posix
+    type storage/posix
+    option volume-id {{ storage_unit.volume.id }}
+    option directory {{ storage_unit.path }}
+end-volume
+
+volume {{ storage_unit.volume.name }}-changelog
+    type features/changelog
+    option changelog-brick {{ storage_unit.path }}
+    option changelog-dir {{ storage_unit.path }}/.glusterfs/changelogs
+end-volume
+
+volume {{ storage_unit.volume.name }}-access-control
+    type features/access-control
+    option super-uid 0
+end-volume
+
+volume {{ storage_unit.volume.name }}-locks
+    type features/locks
+end-volume
+
+volume {{ storage_unit.volume.name }}-simple-quota
+    type features/simple-quota
+    option pass-through false
+    option cmd-from-all-client true
+end-volume
+
+volume {{ storage_unit.volume.name }}-upcall
+    type features/upcall
+    option cache-invalidation off
+    option cache-invalidation-timeout 60
+end-volume
+
+volume {{ storage_unit.volume.name }}-io-threads
+    type performance/io-threads
+end-volume
+
+volume {{ storage_unit.volume.name }}-barrier
+    type features/barrier
+    option barrier disable
+    option barrier-timeout 120
+end-volume
+
+volume {{ storage_unit.volume.name }}-index
+    type features/index
+    option xattrop64-watchlist trusted.ec.dirty
+    option xattrop-dirty-watchlist trusted.afr.dirty
+    option xattrop-pending-watchlist trusted.afr.{{ storage_unit.volume.name }}
+    option index-base {{ storage_unit.path }}/.glusterfs/indices
+end-volume
+
+volume {{ storage_unit.path }}
+    type debug/io-stats
+    option unique-id /no/such/path
+end-volume
+
+volume {{ storage_unit.volume.name }}-server
+    type protocol/server
+    option transport-type tcp
+    option transport.socket.read-fail-log false
+    option auth.addr.{{ storage_unit.path }}.allow *
+    option auth-path {{ storage_unit.path }}
+    option auth.login.{{ storage_unit.path }}.ssl-allow *
+    option volspec-directory /var/lib/kadalu/volfiles
+    option listen-port {{ storage_unit.port }}
+end-volume
