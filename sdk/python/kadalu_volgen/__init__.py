@@ -30,7 +30,8 @@ def generate(template_file, data=None, data_file=None, options=None, options_fil
 
     if options is not None:
         with tempfile.NamedTemporaryFile(mode="w") as tmp_file:
-            tmp_file.file.write(json.dumps(options))
+            for key, value in options.items():
+                tmp_file.file.write(f"{key}={value}\n")
             tmp_options_file_name = tmp_file.name
 
         args += ["--options", tmp_options_file_name]

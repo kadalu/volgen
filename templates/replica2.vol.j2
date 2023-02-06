@@ -57,6 +57,23 @@ volume {{ volume.name }}-write-behind
     option write-behind on
 end-volume
 
+volume {{ volume.name }}-open-behind
+    type performance/open-behind
+    option read-after-open yes
+end-volume
+
+volume {{ volume.name }}-quick-read
+    type performance/quick-read
+end-volume
+
+volume {{ volume.name }}-md-cache
+    type performance/md-cache
+end-volume
+
+volume {{ volume.name }}-io-threads
+    type performance/io-threads
+end-volume
+
 volume {{ volume.name }}
     type debug/io-stats
 end-volume

@@ -1,0 +1,2 @@
+performance.open-behind=on
+diagnostics.client-log-level=DEBUG

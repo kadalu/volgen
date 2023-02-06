@@ -27,15 +27,21 @@ OptionParser.parse do |parser|
   end
 end
 
-puts args
-
 volfile = if args.options_file == ""
             Volgen.generate(
               File.read(args.template_file),
               File.read(args.data_file)
             )
           else
-            opts = Volgen::Options.from_json(File.read(args.options_file))
+            opts_data = File.read(args.options_file)
+            opts = Hash(String, String).new
+            opts_data.split("\n").each do |line|
+              next if line.strip == ""
+
+              key, value = line.strip.split("=", 2)
+              opts[key] = value
+            end
+
             Volgen.generate(
               File.read(args.template_file),
               File.read(args.data_file),

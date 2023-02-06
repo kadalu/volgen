@@ -1,5 +1,7 @@
 require "crinja"
 
+require "./options"
+
 module Volgen
   @[Crinja::Attributes]
   class TiebreakerData
@@ -64,10 +66,10 @@ module Volgen
     end
   end
 
-  alias Options = Hash(String, Hash(String, String))
-  
   class Volfile
-    def initialize(@data : String, @options : Options)
+    property parsed_options = Options.new
+
+    def initialize(@data : String, options : Hash(String, String))
       puts @data
       element = VolfileElement.new
       @elements = [] of VolfileElement
@@ -89,9 +91,36 @@ module Volgen
         end
       end
 
+      @parsed_options = VolfileOptions.parsed_options(volfile_type, options)
+      enable_disable_xlators
       update_subvolumes
       update_options_by_type
       update_options_by_name
+    end
+
+    def option_value_disabled?(val)
+      val == "off" || val == "disable"
+    end
+
+    def enable_disable_xlators
+      tmp_elements = @elements
+      @elements = [] of VolfileElement
+
+      tmp_elements.each do |element|
+        opts = @parsed_options[element.type]?
+        next if opts && option_value_disabled?(opts.fetch("xlator_enabled", ""))
+
+        @elements << element
+      end
+    end
+
+    def volfile_type
+      @elements.each do |element|
+        return "client" if element.type == "protocol/client"
+        return "storage-unit" if element.type == "protocol/server"
+      end
+
+      "unknown"
     end
 
     def under_dht?(element)
@@ -134,14 +163,14 @@ module Volgen
 
     def update_options_by_type
       @elements.each do |element|
-        opts = @options[element.type]?
+        opts = @parsed_options[element.type]?
         element.options.merge!(opts) if opts
       end
     end
 
     def update_options_by_name
       @elements.each do |element|
-        opts = @options[element.name]?
+        opts = @parsed_options[element.name]?
         element.options.merge!(opts) if opts
       end
     end
@@ -152,6 +181,8 @@ module Volgen
         content << "volume #{element.name}\n"
         content << "    type #{element.type}\n"
         element.options.each do |key, value|
+          next if key == "xlator_enabled"
+
           content << "    option #{key} #{value}\n"
         end
         content << "    subvolumes #{element.subvolumes}\n" unless element.subvolumes == ""
@@ -164,10 +195,10 @@ module Volgen
   end
   
   def self.generate(tmpl, raw_data)
-    generate(tmpl, raw_data, Options.new)
+    generate(tmpl, raw_data, Hash(String, String).new)
   end
 
-  def self.generate(tmpl, raw_data, options : Options)
+  def self.generate(tmpl, raw_data, options : Hash(String, String))
     env = Crinja.new
     template = env.from_string(tmpl)
 
