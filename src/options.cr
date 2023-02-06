@@ -33,15 +33,15 @@ module VolfileOptions
     if opt_conf.name == ""
       return {
         opt_conf.xlator => {
-          "xlator_enabled" => option_value
-        }
+          "xlator_enabled" => option_value,
+        },
       }
     end
 
     return {
       opt_conf.xlator => {
-        opt_conf.name => option_value
-      }
+        opt_conf.name => option_value,
+      },
     }
   end
 

@@ -27,7 +27,7 @@ module Volgen
 
       names.join(" ")
     end
-    
+
     def initialize
     end
   end
@@ -138,14 +138,14 @@ module Volgen
         # If it is last element then add the previous
         # element as subvolumes
         if idx == (@elements.size - 1)
-          element.subvolumes = @elements[idx-1].name
+          element.subvolumes = @elements[idx - 1].name
           next
         end
 
         subvols = [] of String
         (0...idx).each do |i|
           # If current element is DHT then find all child elements
-          # Or if the graph name starts with the current name 
+          # Or if the graph name starts with the current name
           if @elements[i].name.starts_with?(element.name) ||
              (element.type == "cluster/replicate" && @elements[i].name.ends_with?("-ta")) ||
              (element.type == "cluster/distribute" && under_dht?(@elements[i]))
@@ -155,7 +155,7 @@ module Volgen
 
         # If no subvolumes identified, then add the
         # previous element as subvolume.
-        subvols << @elements[idx-1].name if subvols.size == 0
+        subvols << @elements[idx - 1].name if subvols.size == 0
 
         element.subvolumes = subvols.join(" ")
       end
@@ -191,9 +191,8 @@ module Volgen
 
       content.to_s
     end
-    
   end
-  
+
   def self.generate(tmpl, raw_data)
     generate(tmpl, raw_data, Hash(String, String).new)
   end
@@ -205,9 +204,9 @@ module Volgen
     data = template_data(raw_data)
 
     rendered = case data
-               when Volume then template.render({"volume" => data})
+               when Volume      then template.render({"volume" => data})
                when StorageUnit then template.render({"storage_unit" => data})
-               else template.render
+               else                  template.render
                end
 
     volfile = Volfile.new rendered, options

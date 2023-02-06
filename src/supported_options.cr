@@ -1,7 +1,7 @@
 require "./helpers"
 
 LOG_LEVELS = ["info", "error", "debug"]
-ON_OFF = ["on", "off", "enable", "disable", "yes", "no"]
+ON_OFF     = ["on", "off", "enable", "disable", "yes", "no"]
 
 VolfileOptions.option_config "diagnostics.client-log-level" do |opt|
   opt.type = "client"
@@ -54,7 +54,7 @@ end
 
 VolfileOptions.option_config "performance.strict-o-direct" do |opt|
   opt.xlator = "performance/write-behind"
-  opt.name ="strict-O_DIRECT"
+  opt.name = "strict-O_DIRECT"
   opt.allowed_values = ON_OFF
 end
 
@@ -76,6 +76,6 @@ end
 
 VolfileOptions.option_config "performance.read-after-open" do |opt|
   opt.xlator = "performance/open-behind"
-  opt.name ="read-after-open"
+  opt.name = "read-after-open"
   opt.allowed_values = ON_OFF
 end
