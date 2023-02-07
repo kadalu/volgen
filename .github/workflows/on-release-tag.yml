@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  release_amd64:
+  release_amd64_arm64:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
@@ -33,6 +33,14 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: templates/*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload install.sh file to the release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: extras/install.sh
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true

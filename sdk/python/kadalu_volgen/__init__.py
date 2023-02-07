@@ -13,7 +13,8 @@ class VolfileException(IOError):
     """
 
 
-def generate(template_file, data=None, data_file=None, options=None, options_file=None):
+def generate(template_file, data=None, data_file=None, options=None,
+             options_file=None, output_file=None):
     """
     Generate volfile
     """
@@ -57,6 +58,11 @@ def generate(template_file, data=None, data_file=None, options=None, options_fil
             os.remove(tmp_options_file_name)
 
         if proc.returncode == 0:
+            if output_file is not None:
+                with open(output_file, "w", encoding="utf-8") as ofile:
+                    ofile.write(out.strip())
+                    return
+
             return out.strip()
 
     raise VolfileException(proc.returncode, err.strip())
