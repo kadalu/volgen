@@ -44,3 +44,19 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
+      - name: Upload Python files to the release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: sdk/python/kadalu_volgen/*.py
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      - name: Upload setup.py to the release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: sdk/python/setup.py
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
