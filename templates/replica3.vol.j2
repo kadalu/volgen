@@ -21,7 +21,7 @@ volume {{ volume.name }}-replica-{{ i }}
     option metadata-self-heal on
     option entry-self-heal on
     option read-hash-mode 5
-    option afr-pending-xattr {{ volume.name }}-client-{{ i * 2 }},{{ volume.name }}-client-{{ (i * 2) + 1}},{{ volume.name }}-client-{{ (i * 2) + 2}}
+    option afr-pending-xattr {{ volume.name }}-client-{{ i * 3 }},{{ volume.name }}-client-{{ (i * 3) + 1}},{{ volume.name }}-client-{{ (i * 3) + 2}}
 end-volume
 {% endfor %}
 

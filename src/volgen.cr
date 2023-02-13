@@ -60,7 +60,7 @@ module Volgen
   end
 
   class VolfileElement
-    property name = "", type = "", options = Hash(String, String).new, subvolumes = ""
+    property name = "", type = "", options = Hash(String, String).new, subvolumes = "", parent = ""
 
     def initialize
     end
@@ -88,6 +88,8 @@ module Volgen
           element.subvolumes = line.split(" ", 2)[-1]
         elsif line.starts_with?("type ")
           element.type = line.split[-1]
+        elsif line.starts_with?("parent ")
+          element.parent = line.split[-1]
         end
       end
 
@@ -147,6 +149,7 @@ module Volgen
           # If current element is DHT then find all child elements
           # Or if the graph name starts with the current name
           if @elements[i].name.starts_with?(element.name) ||
+             @elements[i].parent == element.name ||
              (element.type == "cluster/replicate" && @elements[i].name.ends_with?("-ta")) ||
              (element.type == "cluster/distribute" && under_dht?(@elements[i]))
             subvols << @elements[i].name
