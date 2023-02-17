@@ -15,19 +15,19 @@ curl -fsSL https://github.com/kadalu/volgen/releases/latest/download/install.sh 
 Print the generated volfile to `STDOUT`
 
 ```
-kadalu-volgen -t replica3.vol.j2 -d volinfo.json
+kadalu-volgen -t client.vol.j2 -d volinfo.json
 ```
 
 Output to a file
 
 ```
-kadalu-volgen -t replica3.vol.j2 -d volinfo.json -o /var/lib/kadalu/volfiles/vol1.vol
+kadalu-volgen -t client.vol.j2 -d volinfo.json -o /var/lib/kadalu/volfiles/vol1.vol
 ```
 
 With Options file
 
 ```
-kadalu-volgen -t replica3.vol.j2 -d volinfo.json -c volopts.dat -o /var/lib/kadalu/volfiles/vol1.vol
+kadalu-volgen -t client.vol.j2 -d volinfo.json -c volopts.dat -o /var/lib/kadalu/volfiles/vol1.vol
 ```
 
 ## Usage - Python SDK
@@ -36,20 +36,20 @@ kadalu-volgen -t replica3.vol.j2 -d volinfo.json -c volopts.dat -o /var/lib/kada
 import kadalu_volgen
 
 content = kadalu_volgen.generate(
-    "replica2.vol.j2",
+    "client.vol.j2",
     data={"name": "vol1", ..},
 )
 
 # Output to a file
 kadalu_volgen.generate(
-    "replica2.vol.j2",
+    "client.vol.j2",
     data={"name": "vol1", ..},
     output_file="/var/lib/kadalu/volfiles/vol1.vol"
 )
 
 # Specify Options
 kadalu_volgen.generate(
-    "replica2.vol.j2",
+    "client.vol.j2",
     data={"name": "vol1", ..},
     options={"diagnostics.client-log-level": "DEBUG"},
     output_file="/var/lib/kadalu/volfiles/vol1.vol"
@@ -66,7 +66,8 @@ kadalu_volgen.generate(
     "id": "1bf444e1-25c8-479f-91fa-b83fd326f576",
     "distribute_groups": [
         {
-            "type": "replica",
+            "type": "replicate",
+            "replica_count": 2,
             "storage_units": [
                 {
                     "path": "/exports/vol1/s1",
@@ -87,7 +88,8 @@ kadalu_volgen.generate(
             ]
         },
         {
-            "type": "replica",
+            "type": "replicate",
+            "replica_count": 2,
             "storage_units": [
                 {
                     "path": "/exports/vol1/s3",
