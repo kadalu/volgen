@@ -43,6 +43,9 @@ def generate(template_file, data=None, data_file=None, options=None,
     if options_file is not None:
         args += ["--options", options_file]
 
+    if output_file is not None:
+        args += ["--output", output_file]
+
     with subprocess.Popen(
             args,
             stdout=subprocess.PIPE,
@@ -59,9 +62,7 @@ def generate(template_file, data=None, data_file=None, options=None,
 
         if proc.returncode == 0:
             if output_file is not None:
-                with open(output_file, "w", encoding="utf-8") as ofile:
-                    ofile.write(out.strip())
-                    return
+                return
 
             return out.strip()
 
