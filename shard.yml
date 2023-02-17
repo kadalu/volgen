@@ -5,6 +5,11 @@ dependencies:
   crinja:
     github: straight-shoota/crinja
 
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.4.0
+
 targets:
   kadalu-volgen:
     main: src/main.cr

@@ -1,5 +1,9 @@
 version: 2.0
 shards:
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 1.4.0
+
   crinja:
     git: https://github.com/straight-shoota/crinja.git
     version: 0.8.0
