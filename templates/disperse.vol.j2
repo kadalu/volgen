@@ -1,12 +1,13 @@
 {% for dist_grp in volume.distribute_groups %}
   {% set dist_grp_idx = loop.index0 %}
   {% for storage_unit in dist_grp.storage_units %}
-    name {{ volume.name }}-disperse-{{ dist_grp_idx }}-client-{{ (dist_grp_idx * 2) + loop.index0 }}
+    name {{ volume.name }}-client-{{ (dist_grp_idx * 2) + loop.index0 }}
     type protocol/client
     option volfile-key /{{ volume.name }}
     option transport.socket.read-fail-log false
     option remote-subvolume {{ storage_unit.path }}
     option remote-host {{ storage_unit.node.name }}
+    parent {{ volume.name }}-disperse-{{ dist_grp_idx }}
   {% endfor %}
 {% endfor %}
 

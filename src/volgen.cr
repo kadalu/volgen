@@ -56,7 +56,7 @@ module Volgen
     include Crinja::Object::Auto
     include JSON::Serializable
 
-    property type = "", storage_units = [] of StorageUnit
+    property type = "", replica_count = 0, storage_units = [] of StorageUnit
   end
 
   class VolfileElement
@@ -70,7 +70,6 @@ module Volgen
     property parsed_options = Options.new
 
     def initialize(@data : String, options : Hash(String, String))
-      puts @data
       element = VolfileElement.new
       @elements = [] of VolfileElement
 
@@ -140,19 +139,11 @@ module Volgen
         # If specified by the template then don't modify
         next unless element.subvolumes == ""
 
-        # If it is last element then add the previous
-        # element as subvolumes
-        if idx == (@elements.size - 1)
-          element.subvolumes = @elements[idx - 1].name
-          next
-        end
-
         subvols = [] of String
         (0...idx).each do |i|
           # If current element is DHT then find all child elements
           # Or if the graph name starts with the current name
-          if @elements[i].name.starts_with?(element.name) ||
-             @elements[i].parent == element.name ||
+          if @elements[i].parent == element.name ||
              (element.type == "cluster/replicate" && @elements[i].name.ends_with?("-ta")) ||
              (element.type == "cluster/distribute" && under_dht?(@elements[i]))
             subvols << @elements[i].name
@@ -160,8 +151,10 @@ module Volgen
         end
 
         # If no subvolumes identified, then add the
-        # previous element as subvolume.
-        subvols << @elements[idx - 1].name if subvols.size == 0
+        # previous element as subvolume if parent is not specified
+        if subvols.size == 0 && @elements[idx - 1].parent == ""
+          subvols << @elements[idx - 1].name
+        end
 
         element.subvolumes = subvols.join(" ")
       end
@@ -195,7 +188,7 @@ module Volgen
         content << "end-volume\n\n"
       end
 
-      content.to_s
+      content.to_s.strip
     end
   end
 
