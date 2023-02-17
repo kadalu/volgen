@@ -1,5 +1,6 @@
 {
     "path": "/exports/vol1/s1",
+    "type": "arbiter",
     "port": 5001,
     "node": {
         "name": "server1",

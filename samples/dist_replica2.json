@@ -1,0 +1,43 @@
+{
+  "name": "vol1",
+  "id": "e79048bf-ac4d-47cf-8d1f-0a07366ff1ea",
+  "distribute_groups": [
+     {
+         "replica_count": 2,
+         "storage_units": [
+             {
+                 "path": "/exports/vol1/s1",
+                 "port": 4501,
+                 "node": {
+                     "name": "server1"
+                 }
+             },
+             {
+                 "path": "/exports/vol1/s2",
+                 "port": 4502,
+                 "node": {
+                     "name": "server2"
+                 }
+             }
+         ]
+     },
+     {
+         "replica_count": 2,
+         "storage_units": [
+             {
+                 "path": "/exports/vol1/s3",
+                 "port": 4503,
+                 "node": {
+                     "name": "server3"
+                 }
+             },
+             {
+                 "path": "/exports/vol1/s4",
+                 "node": {
+                     "name": "server4"
+                 }
+             }
+         ]
+     }
+  ]
+}

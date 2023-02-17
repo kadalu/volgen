@@ -1,0 +1,82 @@
+volume vol1-posix
+    type storage/posix
+    option volume-id 8e0d9877-d295-48f9-9ee7-83cf593d27ff
+    option directory /exports/vol1/s1
+end-volume
+
+volume vol1-arbiter
+    type features/arbiter
+    subvolumes vol1-posix
+end-volume
+
+volume vol1-changelog
+    type features/changelog
+    option changelog-brick /exports/vol1/s1
+    option changelog-dir /exports/vol1/s1/.glusterfs/changelogs
+    option capture-del-path on
+    subvolumes vol1-arbiter
+end-volume
+
+volume vol1-access-control
+    type features/access-control
+    option super-uid 0
+    subvolumes vol1-changelog
+end-volume
+
+volume vol1-locks
+    type features/locks
+    subvolumes vol1-access-control
+end-volume
+
+volume vol1-simple-quota
+    type features/simple-quota
+    option pass-through false
+    option cmd-from-all-client true
+    subvolumes vol1-locks
+end-volume
+
+volume vol1-upcall
+    type features/upcall
+    option cache-invalidation off
+    option cache-invalidation-timeout 60
+    subvolumes vol1-simple-quota
+end-volume
+
+volume vol1-io-threads
+    type performance/io-threads
+    subvolumes vol1-upcall
+end-volume
+
+volume vol1-barrier
+    type features/barrier
+    option barrier disable
+    option barrier-timeout 120
+    subvolumes vol1-io-threads
+end-volume
+
+volume vol1-index
+    type features/index
+    option xattrop64-watchlist trusted.ec.dirty
+    option xattrop-dirty-watchlist trusted.afr.dirty
+    option xattrop-pending-watchlist trusted.afr.vol1
+    option index-base /exports/vol1/s1/.glusterfs/indices
+    subvolumes vol1-barrier
+end-volume
+
+volume /exports/vol1/s1
+    type debug/io-stats
+    option unique-id /no/such/path
+    subvolumes vol1-index
+end-volume
+
+volume vol1-server
+    type protocol/server
+    option transport-type tcp
+    option transport.socket.read-fail-log false
+    option auth.addr./exports/vol1/s1.allow *
+    option auth-path /exports/vol1/s1
+    option auth.login./exports/vol1/s1.ssl-allow *
+    option volspec-directory /var/lib/kadalu/volfiles
+    option listen-port 5001
+    subvolumes /exports/vol1/s1
+end-volume
