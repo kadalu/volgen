@@ -3,6 +3,11 @@ type storage/posix
 option volume-id {{ storage_unit.volume.id }}
 option directory {{ storage_unit.path }}
 
+{% if storage_unit.type == "arbiter" %}
+  name {{ storage_unit.volume.name }}-arbiter
+  type features/arbiter
+{% endif %}
+
 name {{ storage_unit.volume.name }}-changelog
 type features/changelog
 option changelog-brick {{ storage_unit.path }}

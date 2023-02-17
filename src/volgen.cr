@@ -48,7 +48,7 @@ module Volgen
     include Crinja::Object::Auto
     include JSON::Serializable
 
-    property path = "", port = 0, index = -1, node = Node.new, volume = Volume.new
+    property path = "", type = "", port = 0, index = -1, node = Node.new, volume = Volume.new
   end
 
   @[Crinja::Attributes]
