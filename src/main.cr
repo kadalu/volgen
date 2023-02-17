@@ -4,6 +4,9 @@ require "crinja"
 
 require "./volgen"
 
+# Set VERSION during build time
+VERSION = {{ env("VERSION") && env("VERSION") != "" ? env("VERSION") : `git describe --always --tags --match "[0-9]*" --dirty`.chomp.stringify }}
+
 struct Args
   property template_file = "", data_file = "", options_file = "", output_file = ""
 end
@@ -18,6 +21,10 @@ OptionParser.parse do |parser|
   parser.on("-o OUTPUT_FILE", "--output=OUTPUT_FILE", "Output file") { |f| args.output_file = f }
   parser.on("-h", "--help", "Show this help") do
     puts parser
+    exit
+  end
+  parser.on("--version", "Show version information") do
+    puts "Kadalu Volgen #{VERSION}"
     exit
   end
   parser.invalid_option do |flag|
