@@ -25,7 +25,7 @@ volume vol1-client-2
     option remote-port 4503
 end-volume
 
-volume vol1-replica-0
+volume vol1-replicate-0
     type cluster/replicate
     option data-self-heal on
     option granular-entry-heal on
@@ -40,7 +40,7 @@ end-volume
 volume vol1-utime
     type features/utime
     option noatime on
-    subvolumes vol1-replica-0
+    subvolumes vol1-replicate-0
 end-volume
 
 volume vol1-write-behind

@@ -56,7 +56,7 @@ module Volgen
     include Crinja::Object::Auto
     include JSON::Serializable
 
-    property type = "", replica_count = 0, storage_units = [] of StorageUnit
+    property type = "", replica_count = 0, redundancy_count = 0, storage_units = [] of StorageUnit
   end
 
   class VolfileElement

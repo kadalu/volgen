@@ -25,34 +25,9 @@ volume vol1-client-2
     option remote-port 4503
 end-volume
 
-volume vol1-client-3
-    type protocol/client
-    option transport.socket.read-fail-log false
-    option volfile-key /vol1
-    option remote-subvolume /exports/vol1/s4
-    option remote-host server4
-    option remote-port 4504
-end-volume
-
-volume vol1-client-4
-    type protocol/client
-    option transport.socket.read-fail-log false
-    option volfile-key /vol1
-    option remote-subvolume /exports/vol1/s5
-    option remote-host server5
-    option remote-port 4505
-end-volume
-
-volume vol1-client-5
-    type protocol/client
-    option transport.socket.read-fail-log false
-    option volfile-key /vol1
-    option remote-subvolume /exports/vol1/s6
-    option remote-host server6
-end-volume
-
-volume vol1-replicate-0
-    type cluster/replicate
+volume vol1-disperse-0
+    type cluster/disperse
+    option redundancy 1
     option data-self-heal on
     option granular-entry-heal on
     option iam-self-heal-daemon off
@@ -63,27 +38,10 @@ volume vol1-replicate-0
     subvolumes vol1-client-0 vol1-client-1 vol1-client-2
 end-volume
 
-volume vol1-replicate-1
-    type cluster/replicate
-    option data-self-heal on
-    option granular-entry-heal on
-    option iam-self-heal-daemon off
-    option metadata-self-heal on
-    option entry-self-heal on
-    option read-hash-mode 5
-    option afr-pending-xattr vol1-client-3,vol1-client-4,vol1-client-5
-    subvolumes vol1-client-3 vol1-client-4 vol1-client-5
-end-volume
-
-volume vol1-dht
-    type cluster/distribute
-    subvolumes vol1-replicate-0 vol1-replicate-1
-end-volume
-
 volume vol1-utime
     type features/utime
     option noatime on
-    subvolumes vol1-dht
+    subvolumes vol1-disperse-0
 end-volume
 
 volume vol1-write-behind

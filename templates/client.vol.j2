@@ -1,7 +1,12 @@
 {% for dist_grp in volume.distribute_groups %}
   {% set dist_grp_idx = loop.index0 %}
+  {% if dist_grp.replica_count > 0 %}
+    {% set vol_type = "replicate" %}
+  {% else %}
+    {% set vol_type = "disperse" %}
+  {% endif %}
   {% for storage_unit in dist_grp.storage_units %}
-    name {{ volume.name }}-client-{{ (dist_grp_idx * dist_grp.replica_count) + loop.index0 }}
+    name {{ volume.name }}-client-{{ (dist_grp_idx * (dist_grp.storage_units|length)) + loop.index0 }}
     type protocol/client
     option transport.socket.read-fail-log false
     option volfile-key /{{ volume.name }}
@@ -10,7 +15,7 @@
     {% if storage_unit.port != 0 %}
       option remote-port {{ storage_unit.port }}
     {% endif %}
-    parent {{ volume.name }}-replica-{{ dist_grp_idx }}
+    parent {{ volume.name }}-{{ vol_type }}-{{ dist_grp_idx }}
   {% endfor %}
 {% endfor %}
 
@@ -23,10 +28,19 @@
   option remote-subvolume {{ volume.tiebreaker.path }}
 {%- endif -%}
 
-{% for i in range(volume.distribute_groups|length) %}
-  {% set replica_count = volume.distribute_groups[i].replica_count %}
-  name {{ volume.name }}-replica-{{ i }}
-  type cluster/replicate
+{% for dist_grp in volume.distribute_groups %}
+  {% set dist_grp_idx = loop.index0 %}
+  {% set dist_grp_size = dist_grp.storage_units|length %}
+  {% if dist_grp.replica_count > 0 %}
+    {% set vol_type = "replicate" %}
+  {% else %}
+    {% set vol_type = "disperse" %}
+  {% endif %}
+  name {{ volume.name }}-{{ vol_type }}-{{ loop.index0 }}
+  type cluster/{{ vol_type }}
+  {% if dist_grp.redundancy_count > 0 %}
+    option redundancy {{ dist_grp.redundancy_count }}
+  {% endif %}
   option data-self-heal on
   option granular-entry-heal on
   option iam-self-heal-daemon off
@@ -34,10 +48,10 @@
   option entry-self-heal on
   option read-hash-mode 5
   {% if volume.tiebreaker.path != "" %}
-    option afr-pending-xattr {{ volume.name }}-client-{{ i * 2 }},{{ volume.name }}-client-{{ (i * 2) + 1}},{{ volume.id }}-ta
+    option afr-pending-xattr {{ volume.name }}-client-{{ dist_grp_idx * dist_grp_size }},{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + 1}},{{ volume.id }}-ta
     option thin-arbiter {{ volume.tiebreaker.node }}:{{ volume.tiebreaker.path }}
   {% else %}
-    option afr-pending-xattr {{ volume.name }}-client-{{ i * replica_count }},{{ volume.name }}-client-{{ (i * replica_count) + 1}}{% if replica_count > 2 %},{{ volume.name }}-client-{{ (i * replica_count) + 2}}{% endif %}
+    option afr-pending-xattr {% for i in range(dist_grp.storage_units|length) %}{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + i }}{% if not loop.last %},{% endif %}{% endfor %}
   {% endif %}
 {% endfor %}
 

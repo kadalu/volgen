@@ -33,7 +33,7 @@ volume vol1-client-3
     option remote-host server4
 end-volume
 
-volume vol1-replica-0
+volume vol1-replicate-0
     type cluster/replicate
     option data-self-heal on
     option granular-entry-heal on
@@ -45,7 +45,7 @@ volume vol1-replica-0
     subvolumes vol1-client-0 vol1-client-1
 end-volume
 
-volume vol1-replica-1
+volume vol1-replicate-1
     type cluster/replicate
     option data-self-heal on
     option granular-entry-heal on
@@ -59,7 +59,7 @@ end-volume
 
 volume vol1-dht
     type cluster/distribute
-    subvolumes vol1-replica-0 vol1-replica-1
+    subvolumes vol1-replicate-0 vol1-replicate-1
 end-volume
 
 volume vol1-utime

@@ -2,7 +2,7 @@ require "spec"
 
 require "../src/volgen"
 
-REPLICA_TMPL            = File.read("templates/replica.vol.j2")
+REPLICA_TMPL            = File.read("templates/client.vol.j2")
 REP2_VOLDATA_JSON       = File.read("samples/replica2.json")
 DIST_REP2_VOLDATA_JSON  = File.read("samples/dist_replica2.json")
 REP3_VOLDATA_JSON       = File.read("samples/replica3.json")
