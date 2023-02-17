@@ -1,63 +1,53 @@
 {% for dist_grp in volume.distribute_groups %}
-{% set dist_grp_idx = loop.index0 %}
-{% for storage_unit in dist_grp.storage_units %}
-volume {{ volume.name }}-disperse-{{ dist_grp_idx }}-client-{{ (dist_grp_idx * 2) + loop.index0 }}
+  {% set dist_grp_idx = loop.index0 %}
+  {% for storage_unit in dist_grp.storage_units %}
+    name {{ volume.name }}-disperse-{{ dist_grp_idx }}-client-{{ (dist_grp_idx * 2) + loop.index0 }}
     type protocol/client
     option volfile-key /{{ volume.name }}
     option transport.socket.read-fail-log false
     option remote-subvolume {{ storage_unit.path }}
     option remote-host {{ storage_unit.node.name }}
-end-volume
-{% endfor %}
+  {% endfor %}
 {% endfor %}
 
 {% for dist_grp in volume.distribute_groups %}
-volume {{ volume.name }}-disperse-{{ loop.index0 }}
-    type cluster/disperse
-    option redundancy {{ disperse_redundancy }}
-    option data-self-heal on
-    option granular-entry-heal on
-    option iam-self-heal-daemon off
-    option metadata-self-heal on
-    option entry-self-heal on
-    option read-hash-mode 5
-end-volume
+  name {{ volume.name }}-disperse-{{ loop.index0 }}
+  type cluster/disperse
+  option redundancy {{ disperse_redundancy }}
+  option data-self-heal on
+  option granular-entry-heal on
+  option iam-self-heal-daemon off
+  option metadata-self-heal on
+  option entry-self-heal on
+  option read-hash-mode 5
 {% endfor %}
 
 {% if volume.distribute_groups|length > 1 -%}
-volume {{ volume.name }}-dht
-    type cluster/distribute
-end-volume
+  name {{ volume.name }}-dht
+  type cluster/distribute
 {%- endif %}
 
-volume {{ volume.name }}-utime
-    type features/utime
-    option noatime on
-end-volume
+name {{ volume.name }}-utime
+type features/utime
+option noatime on
 
-volume {{ volume.name }}-write-behind
-    type performance/write-behind
-    option flush-behind on
-    option write-behind on
-end-volume
+name {{ volume.name }}-write-behind
+type performance/write-behind
+option flush-behind on
+option write-behind on
 
-volume {{ volume.name }}-open-behind
-    type performance/open-behind
-    option read-after-open yes
-end-volume
+name {{ volume.name }}-open-behind
+type performance/open-behind
+option read-after-open yes
 
-volume {{ volume.name }}-quick-read
-    type performance/quick-read
-end-volume
+name {{ volume.name }}-quick-read
+type performance/quick-read
 
-volume {{ volume.name }}-md-cache
-    type performance/md-cache
-end-volume
+name {{ volume.name }}-md-cache
+type performance/md-cache
 
-volume {{ volume.name }}-io-threads
-    type performance/io-threads
-end-volume
+name {{ volume.name }}-io-threads
+type performance/io-threads
 
-volume {{ volume.name }}
-    type debug/io-stats
-end-volume
+name {{ volume.name }}
+type debug/io-stats

@@ -76,11 +76,11 @@ module Volgen
 
       @data.split("\n").each do |line|
         line = line.strip
-        if line.starts_with?("volume ")
+        if line.starts_with?("name ")
+          # One graph is complete. Start new graph parsing
+          @elements << element if element.name != ""
           element = VolfileElement.new
           element.name = line.split[-1]
-        elsif line == "end-volume"
-          @elements << element
         elsif line.starts_with?("option ")
           _, name, value = line.split
           element.options[name] = value
@@ -92,6 +92,9 @@ module Volgen
           element.parent = line.split[-1]
         end
       end
+
+      # Add the last element
+      @elements << element
 
       @parsed_options = VolfileOptions.parsed_options(volfile_type, options)
       enable_disable_xlators
