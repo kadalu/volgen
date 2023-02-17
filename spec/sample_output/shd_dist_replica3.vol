@@ -1,0 +1,88 @@
+volume vol1-client-0
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s1
+    option remote-host server1
+    option remote-port 4501
+end-volume
+
+volume vol1-client-1
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s2
+    option remote-host server2
+    option remote-port 4502
+end-volume
+
+volume vol1-client-2
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s3
+    option remote-host server3
+    option remote-port 4503
+end-volume
+
+volume vol1-client-3
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s4
+    option remote-host server4
+    option remote-port 4504
+end-volume
+
+volume vol1-client-4
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s5
+    option remote-host server5
+    option remote-port 4505
+end-volume
+
+volume vol1-client-5
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s6
+    option remote-host server6
+end-volume
+
+volume vol1-replicate-0
+    type cluster/replicate
+    option data-self-heal on
+    option granular-entry-heal on
+    option iam-self-heal-daemon on
+    option self-heal-daemon on
+    option metadata-self-heal on
+    option choose-local on
+    option ensure-durability on
+    option data-change-log on
+    option entry-self-heal on
+    option afr-pending-xattr vol1-client-0,vol1-client-1,vol1-client-2
+    subvolumes vol1-client-0 vol1-client-1 vol1-client-2
+end-volume
+
+volume vol1-replicate-1
+    type cluster/replicate
+    option data-self-heal on
+    option granular-entry-heal on
+    option iam-self-heal-daemon on
+    option self-heal-daemon on
+    option metadata-self-heal on
+    option choose-local on
+    option ensure-durability on
+    option data-change-log on
+    option entry-self-heal on
+    option afr-pending-xattr vol1-client-3,vol1-client-4,vol1-client-5
+    subvolumes vol1-client-3 vol1-client-4 vol1-client-5
+end-volume
+
+volume vol1-shd
+    type debug/io-stats
+    option volume-id e79048bf-ac4d-47cf-8d1f-0a07366ff1ea
+    subvolumes vol1-replicate-0 vol1-replicate-1
+end-volume

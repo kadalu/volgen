@@ -1,10 +1,5 @@
 {% for dist_grp in volume.distribute_groups %}
   {% set dist_grp_idx = loop.index0 %}
-  {% if dist_grp.replica_count > 0 %}
-    {% set vol_type = "replicate" %}
-  {% else %}
-    {% set vol_type = "disperse" %}
-  {% endif %}
   {% for storage_unit in dist_grp.storage_units %}
     name {{ volume.name }}-client-{{ (dist_grp_idx * (dist_grp.storage_units|length)) + loop.index0 }}
     type protocol/client
@@ -15,7 +10,12 @@
     {% if storage_unit.port != 0 %}
       option remote-port {{ storage_unit.port }}
     {% endif %}
-    parent {{ volume.name }}-{{ vol_type }}-{{ dist_grp_idx }}
+
+    {% if dist_grp.replica_count > 0 or dist_grp.redundancy_count > 0 %}
+      parent {{ volume.name }}-{% if dist_grp.replica_count > 0 %}replicate{% else %}disperse{% endif %}-{{ dist_grp_idx }}
+    {% else %}
+      parent {{ volume.name }}-dht
+    {% endif %}
   {% endfor %}
 {% endfor %}
 
@@ -29,29 +29,31 @@
 {%- endif -%}
 
 {% for dist_grp in volume.distribute_groups %}
-  {% set dist_grp_idx = loop.index0 %}
-  {% set dist_grp_size = dist_grp.storage_units|length %}
-  {% if dist_grp.replica_count > 0 %}
-    {% set vol_type = "replicate" %}
-  {% else %}
-    {% set vol_type = "disperse" %}
-  {% endif %}
-  name {{ volume.name }}-{{ vol_type }}-{{ loop.index0 }}
-  type cluster/{{ vol_type }}
-  {% if dist_grp.redundancy_count > 0 %}
-    option redundancy {{ dist_grp.redundancy_count }}
-  {% endif %}
-  option data-self-heal on
-  option granular-entry-heal on
-  option iam-self-heal-daemon off
-  option metadata-self-heal on
-  option entry-self-heal on
-  option read-hash-mode 5
-  {% if volume.tiebreaker.path != "" %}
-    option afr-pending-xattr {{ volume.name }}-client-{{ dist_grp_idx * dist_grp_size }},{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + 1}},{{ volume.id }}-ta
-    option thin-arbiter {{ volume.tiebreaker.node }}:{{ volume.tiebreaker.path }}
-  {% else %}
-    option afr-pending-xattr {% for i in range(dist_grp.storage_units|length) %}{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + i }}{% if not loop.last %},{% endif %}{% endfor %}
+  {% if dist_grp.replica_count > 0 or dist_grp.redundancy_count > 0 %}
+    {% set dist_grp_idx = loop.index0 %}
+    {% set dist_grp_size = dist_grp.storage_units|length %}
+    {% if dist_grp.replica_count > 0 %}
+      {% set vol_type = "replicate" %}
+    {% else %}
+      {% set vol_type = "disperse" %}
+    {% endif %}
+    name {{ volume.name }}-{{ vol_type }}-{{ loop.index0 }}
+    type cluster/{{ vol_type }}
+    {% if dist_grp.redundancy_count > 0 %}
+      option redundancy {{ dist_grp.redundancy_count }}
+    {% endif %}
+    option data-self-heal on
+    option granular-entry-heal on
+    option iam-self-heal-daemon off
+    option metadata-self-heal on
+    option entry-self-heal on
+    option read-hash-mode 5
+    {% if volume.tiebreaker.path != "" %}
+      option afr-pending-xattr {{ volume.name }}-client-{{ dist_grp_idx * dist_grp_size }},{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + 1}},{{ volume.id }}-ta
+      option thin-arbiter {{ volume.tiebreaker.node }}:{{ volume.tiebreaker.path }}
+    {% else %}
+      option afr-pending-xattr {% for i in range(dist_grp.storage_units|length) %}{{ volume.name }}-client-{{ (dist_grp_idx * dist_grp_size) + i }}{% if not loop.last %},{% endif %}{% endfor %}
+    {% endif %}
   {% endif %}
 {% endfor %}
 

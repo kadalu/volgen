@@ -1,0 +1,71 @@
+volume vol1-client-0
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s1
+    option remote-host server1
+    option remote-port 4501
+end-volume
+
+volume vol1-client-1
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s2
+    option remote-host server2
+    option remote-port 4502
+end-volume
+
+volume vol1-client-2
+    type protocol/client
+    option transport.socket.read-fail-log false
+    option volfile-key /vol1
+    option remote-subvolume /exports/vol1/s3
+    option remote-host server3
+    option remote-port 4503
+end-volume
+
+volume vol1-dht
+    type cluster/distribute
+    subvolumes vol1-client-0 vol1-client-1 vol1-client-2
+end-volume
+
+volume vol1-utime
+    type features/utime
+    option noatime on
+    subvolumes vol1-dht
+end-volume
+
+volume vol1-write-behind
+    type performance/write-behind
+    option flush-behind on
+    option write-behind on
+    subvolumes vol1-utime
+end-volume
+
+volume vol1-open-behind
+    type performance/open-behind
+    option read-after-open yes
+    subvolumes vol1-write-behind
+end-volume
+
+volume vol1-quick-read
+    type performance/quick-read
+    subvolumes vol1-open-behind
+end-volume
+
+volume vol1-md-cache
+    type performance/md-cache
+    subvolumes vol1-quick-read
+end-volume
+
+volume vol1-io-threads
+    type performance/io-threads
+    subvolumes vol1-md-cache
+end-volume
+
+volume vol1
+    type debug/io-stats
+    option volume-id e79048bf-ac4d-47cf-8d1f-0a07366ff1ea
+    subvolumes vol1-io-threads
+end-volume

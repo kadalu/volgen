@@ -2,9 +2,9 @@ require "spec"
 
 require "../src/volgen"
 
-STORAGE_UNIT_TMPL            = File.read("templates/storage_unit.vol.j2")
-STORAGE_UNIT_JSON       = File.read("samples/storage_unit.json")
-STORAGE_UNIT_ARBITER_JSON       = File.read("samples/storage_unit_arbiter.json")
+STORAGE_UNIT_TMPL         = File.read("templates/storage_unit.vol.j2")
+STORAGE_UNIT_JSON         = File.read("samples/storage_unit.json")
+STORAGE_UNIT_ARBITER_JSON = File.read("samples/storage_unit_arbiter.json")
 
 describe Volgen do
   context "Volfile generation of Storage Units" do
