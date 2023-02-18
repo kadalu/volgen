@@ -24,7 +24,8 @@ module VolfileOptions
   end
 
   def self.parsed_option(volfile_type, option_name, option_value)
-    opt_conf = @@options_map[option_name]
+    opt_conf = @@options_map[option_name]?
+    return Options.new unless opt_conf
     return Options.new unless opt_conf.type == "" || opt_conf.type == volfile_type
 
     # If option name is empty in the configuration
