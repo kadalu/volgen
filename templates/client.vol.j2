@@ -57,7 +57,7 @@
   {% endif %}
 {% endfor %}
 
-{% if volume.distribute_groups|length > 1 %}
+{% if volume.distribute_groups|length > 1 or volume.distribute_groups[0].storage_units|length == 1 %}
   name {{ volume.name }}-dht
   type cluster/distribute
 {% endif %}
