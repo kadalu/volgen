@@ -59,5 +59,6 @@ volfile = if args.options_file == ""
 if args.output_file == ""
   puts volfile
 else
+  Dir.mkdir_p(Path[args.output_file].parent)
   File.write(args.output_file, volfile)
 end
