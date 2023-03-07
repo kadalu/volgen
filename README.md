@@ -112,6 +112,7 @@ kadalu_volgen.generate(
     ]
 }
 ```
+Above example of client data file is for `replicated` volume type, check [samples](https://github.com/kadalu/volgen/tree/main/samples) for client data files of different volume types.
 
 ### Storage Unit
 
