@@ -54,10 +54,10 @@ def generate(template_file, data=None, data_file=None, options=None,
     ) as proc:
         out, err = proc.communicate()
 
-        if tmp_data_file_name is not None:
+        if tmp_data_file_name is not None and os.path.exists(tmp_data_file_name):
             os.remove(tmp_data_file_name)
 
-        if tmp_options_file_name is not None:
+        if tmp_options_file_name is not None and os.path.exists(tmp_options_file_name):
             os.remove(tmp_options_file_name)
 
         if proc.returncode == 0:
