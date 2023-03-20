@@ -30,7 +30,7 @@ def generate(template_file, data=None, data_file=None, options=None,
         args += ["--data", tmp_data_file_name]
 
     if options is not None:
-        with tempfile.NamedTemporaryFile(mode="w") as tmp_file:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp_file:
             for key, value in options.items():
                 tmp_file.file.write(f"{key}={value}\n")
             tmp_options_file_name = tmp_file.name
