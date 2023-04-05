@@ -2,13 +2,14 @@ require "spec"
 
 require "../src/volgen"
 
-REPLICA_TMPL            = File.read("templates/client.vol.j2")
-SHD_TMPL                = File.read("templates/shd.vol.j2")
-REP2_VOLDATA_JSON       = File.read("samples/replica2.json")
-DIST_REP2_VOLDATA_JSON  = File.read("samples/dist_replica2.json")
-REP3_VOLDATA_JSON       = File.read("samples/replica3.json")
-DIST_REP3_VOLDATA_JSON  = File.read("samples/dist_replica3.json")
-TIEBREAKER_VOLDATA_JSON = File.read("samples/tiebreaker.json")
+REPLICA_TMPL              = File.read("templates/client.vol.j2")
+SHD_TMPL                  = File.read("templates/shd.vol.j2")
+REP2_VOLDATA_JSON         = File.read("samples/replica2.json")
+DIST_REP2_VOLDATA_JSON    = File.read("samples/dist_replica2.json")
+REP3_VOLDATA_JSON         = File.read("samples/replica3.json")
+DIST_REP3_VOLDATA_JSON    = File.read("samples/dist_replica3.json")
+TIEBREAKER_VOLDATA_JSON   = File.read("samples/tiebreaker.json")
+REP3_ARBITER_VOLDATA_JSON = File.read("samples/replica3_arbiter.json")
 
 describe Volgen do
   context "Volfile generation of Replica volumes" do
@@ -45,6 +46,11 @@ describe Volgen do
     it "checks if volfile rendered for distributed replica3 volume SHD" do
       volfile = Volgen.generate(SHD_TMPL, DIST_REP3_VOLDATA_JSON)
       volfile.should eq File.read("spec/sample_output/shd_dist_replica3.vol")
+    end
+
+    it "checks if volfile rendered for Arbiter volume" do
+      volfile = Volgen.generate(REPLICA_TMPL, REP3_ARBITER_VOLDATA_JSON)
+      volfile.should eq File.read("spec/sample_output/replica3_arbiter.vol")
     end
   end
 end

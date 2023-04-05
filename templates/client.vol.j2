@@ -42,6 +42,9 @@
     {% if dist_grp.redundancy_count > 0 %}
       option redundancy {{ dist_grp.redundancy_count }}
     {% endif %}
+    {% if dist_grp.replica_count > 0 and dist_grp.arbiter_count > 0 %}
+      option arbiter-count {{ dist_grp.arbiter_count }}
+    {% endif %}
     option data-self-heal on
     option granular-entry-heal on
     option iam-self-heal-daemon off
