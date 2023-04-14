@@ -121,7 +121,7 @@ module Volgen
     def volfile_type
       @elements.each do |element|
         return "client" if element.type == "protocol/client"
-        return "storage-unit" if element.type == "protocol/server"
+        return "storage_unit" if element.type == "protocol/server"
       end
 
       "unknown"
