@@ -69,6 +69,8 @@ module Volgen
   class Volfile
     property parsed_options = Options.new
 
+    # Rendered Volfile is passed here to split into the elements
+    #
     def initialize(@data : String, options : Hash(String, String))
       element = VolfileElement.new
       @elements = [] of VolfileElement
@@ -95,17 +97,21 @@ module Volgen
       # Add the last element
       @elements << element
 
-      @parsed_options = VolfileOptions.parsed_options(volfile_type, options)
+      @parsed_options = VolfileOptions.parsed_options(volfile_type, options, @elements)
       enable_disable_xlators
       update_subvolumes
       update_options_by_type
       update_options_by_name
     end
 
+    # Check if the value says a option is disabled
     def option_value_disabled?(val)
-      val == "off" || val == "disable"
+      val == "off" || val == "disable" || val == "no" || val == "false"
     end
 
+    # Enable or disable elements based on the
+    # xlator_enabled field. Generate new elements
+    # list with only enabled elements.
     def enable_disable_xlators
       tmp_elements = @elements
       @elements = [] of VolfileElement
@@ -118,6 +124,8 @@ module Volgen
       end
     end
 
+    # To auto detect the type of volfile based on existence of
+    # protocol client or server.
     def volfile_type
       @elements.each do |element|
         return "client" if element.type == "protocol/client"
@@ -127,10 +135,21 @@ module Volgen
       "unknown"
     end
 
+    # Valid list of xlators that can become child of cluster/dht xlator
     def under_dht?(element)
       ["cluster/replicate", "cluster/disperse"].includes?(element.type)
     end
 
+    # Intelligent subvolumes updator.
+    # 1. If specified in the template itself - Do not modify
+    # 2. If any elements parent field matches the current element name
+    # 3. If current element is replicate and any element before this has
+    #    a name that ends with `-ta` (Thin arbiter).
+    # 4. If the current element is DHT and any previous elements are child
+    #    of DHT (Ex: replicate, disperse)
+    # 5. If no subvols detected then add previous element as child of
+    #    current element. That is, add to subvols list. (Only if parent is
+    #    not specified in the previous element)
     def update_subvolumes
       @elements.each_with_index do |element, idx|
         next if element.type == "protocol/client"
@@ -160,6 +179,8 @@ module Volgen
       end
     end
 
+    # Add or update the options for each elements
+    # if the user provided options for that type.
     def update_options_by_type
       @elements.each do |element|
         opts = @parsed_options[element.type]?
@@ -174,6 +195,15 @@ module Volgen
       end
     end
 
+    # Generate the final Volfile based on all the parsed details
+    # Sample:
+    # ```
+    # volume storage-pool-1
+    #     type debug/io-stats
+    #     option volume-id 974eaef2-bca9-11ed-9d23-0242ac110003
+    #     subvolumes storage-pool-1-io-threads
+    # end-volume
+    # ```
     def generate
       content = String::Builder.new
       @elements.each do |element|
@@ -192,16 +222,21 @@ module Volgen
     end
   end
 
+  # Volfile.generate generates the volfile using the given
+  # template and data. Automatically detect the type of
+  # data as Volume or StorageUnit type.
   def self.generate(tmpl, raw_data)
     generate(tmpl, raw_data, Hash(String, String).new)
   end
 
+  # Generate Volfile using the given template, data and options
   def self.generate(tmpl, raw_data, options : Hash(String, String))
     env = Crinja.new
     template = env.from_string(tmpl)
 
     data = template_data(raw_data)
 
+    # Render the Jinja template by giving the data
     rendered = case data
                when Volume      then template.render({"volume" => data})
                when StorageUnit then template.render({"storage_unit" => data})
@@ -212,6 +247,10 @@ module Volgen
     volfile.generate
   end
 
+  # Try to automatically detect the data as volume
+  # info or storage unit info. If the field "path"
+  # exists then it must be a Storage unit since volume
+  # doesn't contain the path.
   def self.template_data(raw_data)
     data = StorageUnit.from_json(raw_data)
     return data unless data.path == ""

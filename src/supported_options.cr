@@ -1,3 +1,25 @@
+# Add all the options that can be used with `kadalu` or
+# `kubectl_kadalu` commands.
+#
+# The helper block `VolfileOptions.option_config` accepts the
+# option name as a string or list of strings when one option has aliases.
+#
+# Example:
+# ```
+# VolfileOptions.option_config "diagnostics.client-log-level" do |opt|
+#   opt.type = "client"
+#   opt.name = "log-level"
+#   opt.xlator = "debug/io-stats"
+#   opt.allowed_values = LOG_LEVELS
+# end
+# ```
+#
+# Define `type`, `name`, `xlator`, `allowed_values`
+# - `type` - Template type. `client` template or `storage_unit` template
+# - `name` - Name of the option. If name of the option is not provided then
+#            this option will be used to enable or disable the Xlator.
+# - `xlator` - Name of the xlator to which this option belongs to.
+# - `allowed_values` - If the option should accept only the given list of values.
 require "./helpers"
 
 LOG_LEVELS = ["info", "error", "debug"]
